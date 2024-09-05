@@ -1,0 +1,141 @@
+import React, { useState } from "react";
+
+// Sample product data (you can replace this with actual data from your app)
+const initialProducts = [
+  {
+    id: 1,
+    name: "Wireless Charger",
+    price: 35.0,
+    color: "Black",
+    quantity: 2,
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 2,
+    name: "Speaker P168A",
+    price: 240.0,
+    color: "Black",
+    quantity: 1,
+    image: "https://via.placeholder.com/150",
+  },
+];
+
+export const CartModal = () => {
+  // State to control modal visibility
+  const [isOpen, setIsOpen] = useState(false);
+
+  // State to manage products in the cart
+  const [products, setProducts] = useState(initialProducts);
+
+  // Toggle modal visibility
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // Handle quantity change
+  const handleQuantityChange = (productId, newQuantity) => {
+    const updatedProducts = products.map((product) =>
+      product.id === productId ? { ...product, quantity: newQuantity } : product
+    );
+    setProducts(updatedProducts);
+  };
+
+  // Handle Remove product
+  const handleRemove = (productId) => {
+    const updatedProducts = products.filter(
+      (product) => product.id !== productId
+    );
+    setProducts(updatedProducts);
+  };
+
+  // Prevent click event from closing the modal
+  const handleModalClick = (e) => {
+    e.stopPropagation();
+  };
+
+  return (
+    <div>
+      {/* Cart Button */}
+      <button
+        className="flex items-center justify-center w-36 bg-[#062261] hover:bg-blue-700 rounded-md text-white font-bold"
+        onClick={toggleModal}
+      >
+        View Cart
+      </button>
+
+      {/* Modal */}
+      {isOpen && (
+        <>
+          <div
+            className="fixed top-0 right-0 h-full bg-slate-100 shadow-xl w-1/4 transform transition-shadow duration-1000 ease-in-out translate-x-0"
+            onClick={toggleModal}
+          >
+            <div onClick={handleModalClick}>
+              {/* Close button */}
+              <button
+                className="text-red-500 font-bold absolute top-4 right-4"
+                onClick={toggleModal}
+              >
+                X
+              </button>
+              <h2 className="text-2xl font-bold p-4">Your Cart</h2>
+
+              <div className="p-4 space-y-4">
+                {/* Render Products */}
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-md"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div>
+                          <h3 className="font-bold text-gray-900">
+                            {product.name}
+                          </h3>
+                          <p className="text-gray-500">${product.price} USD</p>
+                          <p className="text-gray-500">
+                            Color: {product.color}
+                          </p>
+                          <button
+                            className="text-blue-600 hover:underline mt-1"
+                            onClick={() => handleRemove(product.id)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <input
+                          type="number"
+                          value={product.quantity}
+                          min="1"
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              product.id,
+                              Number(e.target.value)
+                            )
+                          }
+                          className="w-12 h-10 border rounded-md text-center"
+                        />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500">Cart is empty!</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default CartModal;
